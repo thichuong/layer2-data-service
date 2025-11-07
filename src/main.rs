@@ -68,7 +68,7 @@ async fn main() -> Result<()> {
     health_reporter
         .set_serving::<MarketDataServiceServer<MarketDataGrpcService>>()
         .await;
-
+    tracing::info!("👂 Server is now entering serving state (awaiting connections on {})...", socket_addr);
     // Run gRPC server with health check and market data services
     Server::builder()
         .add_service(health_service)
