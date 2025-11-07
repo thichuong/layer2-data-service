@@ -20,7 +20,7 @@ impl Config {
 
         // Railway sets SERVICE_PORT, default to 8001 for local dev
         let http_port = env::var("SERVICE_PORT")
-            .unwrap_or_else(|_| "8001".to_string())
+            .unwrap_or_else(|_| "50051".to_string())
             .parse()
             .context("Invalid SERVICE_PORT or default")?;
 

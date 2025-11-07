@@ -1,4 +1,4 @@
-# Railway configuration for Layer2 Data Service
+# Railway configuration for Layer2 Data Service (FIXED)
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
@@ -7,17 +7,23 @@ dockerfilePath = "Dockerfile"
 startCommand = "/app/layer2_data_service"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
+
+# Cấu hình Health Check:
+# Yêu cầu Railway thực hiện gRPC health check trên port 50051.
+# Đây là port mà server của bạn PHẢI lắng nghe.
 healthcheckMethod = "GRPC"
 healthcheckService = "grpc.health.v1.Health" # Tên service mặc định của tonic-health
 healthcheckTimeout = 100
-healthcheckPort = 8001
+healthcheckPort = 50051 # ĐÃ SỬA: Phải khớp với port server của bạn
 
 # Environment variables (set these in Railway dashboard)
 # Required:
-# - SERVICE_PORT (set by Railway as PORT)
 # - CMC_API_KEY
 # - FINNHUB_API_KEY
 # - TAAPI_SECRET
 # - TWELVE_DATA_API_KEY
 # - REDIS_URL
 # - DATABASE_URL
+#
+# LƯU Ý: Đã xóa SERVICE_PORT=${{PORT}}.
+# Chúng ta không dùng port động của Railway cho gRPC.
