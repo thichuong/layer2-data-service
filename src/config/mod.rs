@@ -3,7 +3,6 @@ use anyhow::{Context, Result};
 
 #[derive(Debug, Clone)]
 pub struct Config {
-    pub service_port: u16,
     pub host: String,
     pub redis_url: String,
     pub taapi_secret: String,
@@ -15,11 +14,6 @@ pub struct Config {
 impl Config {
     pub fn from_env() -> Result<Self> {
         dotenvy::dotenv().ok(); // Load .env file if it exists
-
-        let service_port = env::var("SERVICE_PORT")
-            .unwrap_or_else(|_| "8001".to_string())
-            .parse()
-            .context("Invalid SERVICE_PORT")?;
 
         let host = env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
 
@@ -36,7 +30,6 @@ impl Config {
             .unwrap_or(false);
 
         Ok(Self {
-            service_port,
             host,
             redis_url,
             taapi_secret,
@@ -44,9 +37,5 @@ impl Config {
             finnhub_api_key,
             debug,
         })
-    }
-
-    pub fn bind_address(&self) -> String {
-        format!("{}:{}", self.host, self.service_port)
     }
 }

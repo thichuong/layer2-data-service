@@ -27,14 +27,13 @@ RUN useradd -ms /bin/bash appuser && \
 
 USER appuser
 
-# Expose ports (HTTP and gRPC)
-EXPOSE 8001 50051
+# Expose gRPC port only
+EXPOSE 50051
 
 # Environment variables
 ENV RUST_LOG=info \
     RUST_BACKTRACE=1 \
-    HOST="0.0.0.0" \
-    SERVICE_PORT="8001"
+    HOST="0.0.0.0"
 
 # Start the application
 CMD ["./layer2_data_service"]

@@ -1,6 +1,6 @@
 // Layer2 Data Service Library
+// gRPC-only microservice for Layer 2 data aggregation
 
-pub mod api;
 pub mod cache;
 pub mod config;
 pub mod grpc_service;
