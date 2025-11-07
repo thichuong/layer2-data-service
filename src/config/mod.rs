@@ -4,6 +4,7 @@ use anyhow::{Context, Result};
 #[derive(Debug, Clone)]
 pub struct Config {
     pub host: String,
+    pub http_port: u16,  // For health check endpoint (Railway PORT)
     pub redis_url: String,
     pub taapi_secret: String,
     pub cmc_api_key: Option<String>,
@@ -16,6 +17,13 @@ impl Config {
         dotenvy::dotenv().ok(); // Load .env file if it exists
 
         let host = env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
+
+        // Railway sets PORT, default to 8001 for local dev
+        let http_port = env::var("PORT")
+            .or_else(|_| env::var("SERVICE_PORT"))
+            .unwrap_or_else(|_| "8001".to_string())
+            .parse()
+            .context("Invalid PORT")?;
 
         let redis_url = env::var("REDIS_URL").unwrap_or_else(|_| "redis://127.0.0.1:6379".to_string());
 
@@ -31,6 +39,7 @@ impl Config {
 
         Ok(Self {
             host,
+            http_port,
             redis_url,
             taapi_secret,
             cmc_api_key,

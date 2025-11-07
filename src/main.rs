@@ -1,4 +1,5 @@
 use anyhow::Result;
+use axum::{routing::get, Router};
 use std::sync::Arc;
 use tonic::transport::Server;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -11,6 +12,11 @@ use layer2_data_service::{
     },
     services::ExternalApisIsland,
 };
+
+// Simple health check handler for Railway
+async fn health_check() -> &'static str {
+    "OK"
+}
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -27,6 +33,7 @@ async fn main() -> Result<()> {
     let config = Config::from_env()?;
     tracing::info!("📋 Configuration loaded");
     tracing::info!("   Host: {}", config.host);
+    tracing::info!("   HTTP Port: {} (health check)", config.http_port);
     tracing::info!("   Redis URL: {}", config.redis_url);
     tracing::info!("   Debug mode: {}", config.debug);
 
@@ -52,20 +59,43 @@ async fn main() -> Result<()> {
     // Configure gRPC service
     let grpc_service = MarketDataGrpcService::new(Arc::clone(&external_apis_arc));
 
-    // Start gRPC server
+    // Configure HTTP health check router
+    let health_app = Router::new().route("/health", get(health_check));
+
+    // Server addresses
+    // Railway maps PORT for public access (health check)
+    // gRPC uses 50051 for internal communication
+    let http_addr = format!("{}:{}", config.host, config.http_port);
     let grpc_addr = format!("{}:50051", config.host);
+
+    tracing::info!("🚀 Starting HTTP Health Check Server on {}", http_addr);
     tracing::info!("🚀 Starting gRPC Server on {}", grpc_addr);
 
-    let grpc_addr: std::net::SocketAddr = grpc_addr.parse().expect("Invalid gRPC bind address");
+    let http_socket: std::net::SocketAddr = http_addr.parse().expect("Invalid HTTP bind address");
+    let grpc_socket: std::net::SocketAddr = grpc_addr.parse().expect("Invalid gRPC bind address");
 
-    tracing::info!("✅ Layer2 Data Service ready (gRPC only)");
-    tracing::info!("   gRPC API: grpc://{}", grpc_addr);
+    tracing::info!("✅ Layer2 Data Service ready");
+    tracing::info!("   HTTP Health Check (Railway): http://{}/health", http_addr);
+    tracing::info!("   gRPC API (Internal): grpc://{}", grpc_addr);
 
-    // Run gRPC server
-    Server::builder()
-        .add_service(MarketDataServiceServer::new(grpc_service))
-        .serve(grpc_addr)
-        .await?;
+    // Run both servers concurrently
+    // HTTP on Railway PORT for health checks
+    // gRPC on 50051 for internal service communication
+    tokio::try_join!(
+        async {
+            axum::Server::bind(&http_socket)
+                .serve(health_app.into_make_service())
+                .await
+                .map_err(|e| anyhow::anyhow!("HTTP server error: {}", e))
+        },
+        async {
+            Server::builder()
+                .add_service(MarketDataServiceServer::new(grpc_service))
+                .serve(grpc_socket)
+                .await
+                .map_err(|e| anyhow::anyhow!("gRPC server error: {}", e))
+        }
+    )?;
 
     Ok(())
 }
