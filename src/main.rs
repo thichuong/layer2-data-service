@@ -58,14 +58,11 @@ async fn main() -> Result<()> {
     let grpc_service = MarketDataGrpcService::new(Arc::clone(&external_apis_arc));
 
     // Single server address (Railway PORT)
-    let addr = format!("{}:{}", config.host, config.http_port);
+    let addr = format!("{}:50051", config.host); 
     let socket_addr: std::net::SocketAddr = addr.parse().expect("Invalid bind address");
-
     tracing::info!("🚀 Starting gRPC Server (with Health Check) on {}", addr);
     tracing::info!("✅ Layer2 Data Service ready");
-    tracing::info!("   gRPC Health Check: grpc://{} (grpc.health.v1.Health)", addr);
-    tracing::info!("   gRPC Market Data: grpc://{} (MarketDataService)", addr);
-    tracing::info!("   ℹ️  Single port for all gRPC services");
+    tracing::info!("   gRPC (Health + MarketData): grpc://{} (STATIC PORT)", addr);
 
     // Set health status to SERVING for our service
     health_reporter

@@ -29,7 +29,7 @@ USER appuser
 
 # Expose single port for gRPC (includes health check)
 # Railway auto-maps PORT for public access
-EXPOSE 8001
+EXPOSE 50051
 
 # Environment variables
 ENV RUST_LOG=info \
