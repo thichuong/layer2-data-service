@@ -7,7 +7,8 @@ dockerfilePath = "Dockerfile"
 startCommand = "/app/layer2_data_service"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
-healthcheckPath = "/health"
+healthcheckMethod = "GRPC"
+healthcheckService = "grpc.health.v1.Health" # Tên service mặc định của tonic-health
 healthcheckTimeout = 100
 
 # Environment variables (set these in Railway dashboard)
