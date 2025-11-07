@@ -13,7 +13,7 @@ restartPolicyMaxRetries = 10
 # Đây là port mà server của bạn PHẢI lắng nghe.
 healthcheckMethod = "GRPC"
 healthcheckService = "grpc.health.v1.Health" # Tên service mặc định của tonic-health
-healthcheckTimeout = 100
+healthcheckTimeout = 15000
 healthcheckPort = 50051 # ĐÃ SỬA: Phải khớp với port server của bạn
 
 # Environment variables (set these in Railway dashboard)
