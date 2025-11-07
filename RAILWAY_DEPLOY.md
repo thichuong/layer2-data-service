@@ -20,6 +20,8 @@ Railway will automatically detect the Dockerfile. If not:
 2. Set **Root Directory**: `layer2-data-service`
 3. Set **Dockerfile Path**: `Dockerfile`
 
+**Note:** The Dockerfile uses `rust:1.83-bookworm` base image with optimized build configuration matching the monolith setup.
+
 ## Step 3: Set Environment Variables
 
 In Railway dashboard, add these environment variables:

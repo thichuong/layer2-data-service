@@ -66,6 +66,7 @@ smallvec = "1.11"
 
 # Constraint problematic dependencies
 base64ct = "=1.6.0"
+backon = "=1.5.0"  # Pin to 1.5.0 to avoid edition2024 requirement
 
 # Logging & tracing
 tracing = "0.1"
