@@ -50,7 +50,7 @@ async fn main() -> Result<()> {
     tracing::info!("✅ External APIs Island initialized");
 
     let external_apis_arc = Arc::new(external_apis);
-
+    
     // Configure gRPC health reporter
     let (mut health_reporter, health_service) = health_reporter();
 
