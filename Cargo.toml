@@ -75,6 +75,7 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 # gRPC
 tonic = "0.10"
 prost = "0.12"
+tonic-health = "0.10"
 
 # Metrics (optional)
 # prometheus = { version = "0.13", optional = true }

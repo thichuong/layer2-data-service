@@ -27,16 +27,18 @@ RUN useradd -ms /bin/bash appuser && \
 
 USER appuser
 
-# Expose ports:
-# - Railway PORT (health check) - Railway auto-maps
-# - 50051 (gRPC) - Internal communication
-EXPOSE 50051
+# Expose single port for gRPC (includes health check)
+# Railway auto-maps PORT for public access
+EXPOSE 8001
 
 # Environment variables
 ENV RUST_LOG=info \
     RUST_BACKTRACE=1 \
     HOST="0.0.0.0"
-# Railway automatically sets PORT env var for public access
+# Railway automatically sets PORT env var
+# Service exposes:
+# - grpc.health.v1.Health (gRPC health check protocol)
+# - MarketDataService (market data gRPC API)
 
 # Start the application
 CMD ["./layer2_data_service"]
