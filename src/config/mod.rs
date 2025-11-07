@@ -18,12 +18,11 @@ impl Config {
 
         let host = env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
 
-        // Railway sets PORT, default to 8001 for local dev
-        let http_port = env::var("PORT")
-            .or_else(|_| env::var("SERVICE_PORT"))
+        // Railway sets SERVICE_PORT, default to 8001 for local dev
+        let http_port = env::var("SERVICE_PORT")
             .unwrap_or_else(|_| "8001".to_string())
             .parse()
-            .context("Invalid PORT")?;
+            .context("Invalid SERVICE_PORT or default")?;
 
         let redis_url = env::var("REDIS_URL").unwrap_or_else(|_| "redis://127.0.0.1:6379".to_string());
 
